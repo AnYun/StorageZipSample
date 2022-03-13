@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using ICSharpCode.SharpZipLib.Zip;
 using StorageZipSample.Models;
 
 namespace StorageZipSample.Service
@@ -59,6 +60,32 @@ namespace StorageZipSample.Service
             }
             else
                 return (null, null);
+        }
+        /// <summary>
+        /// Zip Blobs
+        /// </summary>
+        /// <param name="fileNames">File Name</param>
+        /// <returns></returns>
+        public byte[] ZipBlobs(List<string> fileNames)
+        {
+            using (var output = new MemoryStream())
+            using (var zipOutputStream = new ZipOutputStream(output))
+            {
+                zipOutputStream.SetLevel(9);
+                foreach (var fileName in fileNames)
+                {
+                    BlobContainerClient container = _blobServiceClient.GetBlobContainerClient(containerName);
+                    BlobClient blob = container.GetBlobClient(fileName);
+                    var entry = new ZipEntry(fileName);
+                    zipOutputStream.PutNextEntry(entry);
+                    blob.DownloadTo(zipOutputStream);
+                }
+
+                zipOutputStream.Finish();
+                zipOutputStream.Close();
+
+                return output.ToArray();
+            }
         }
     }
 }

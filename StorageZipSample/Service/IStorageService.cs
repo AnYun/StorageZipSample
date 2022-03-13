@@ -14,5 +14,11 @@ namespace StorageZipSample.Service
         /// </summary>
         /// <param name="blobName">Blob Name</param>
         (byte[] File, string ContentType) DownloadBlob(string blobName);
+        /// <summary>
+        /// Zip Blobs
+        /// </summary>
+        /// <param name="fileNames">File Name</param>
+        /// <returns></returns>
+        byte[] ZipBlobs(List<string> fileNames);
     }
 }
